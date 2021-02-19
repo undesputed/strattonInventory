@@ -1,0 +1,147 @@
+import React from 'react';
+
+import {withFirebase} from '../../firebase';
+import {AuthUserContext} from '../../session';
+
+class Lists extends React.Component{
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            loading: false,
+            limit: 5,
+            cpu: [],
+            processorUID: []
+        };
+    }
+
+    componentDidMount(){
+        this.onListForCPUS();
+        this.storeUID();
+    }
+
+    onListForCPUS = () => {
+        this.setState({loading: true});
+
+        this.unsubscribe = this.props.firebase
+            .processors()
+            .orderBy('transactionDate', 'desc')
+            .limit(this.state.limit)
+            .onSnapshot(snapshot =>{
+                if(snapshot.size){
+                    let processor = [];
+                    snapshot.forEach(doc =>
+                        processor.push({ ...doc.data(), uid: doc.id}),
+                        );
+                        console.log(processor)
+                    this.setState({
+                        cpu: processor.reverse(),
+                        loading: false,
+                    });
+                } else{
+                    this.setState({
+                        cpu: null,
+                        loading: false
+                    });
+                }
+            });
+    };
+    
+        componentWillUnmount() {
+            this.unsubscribe();
+            this.storeUID();
+        };
+
+    onNextPage = () => {
+        // this.setState(
+        //     state => ({limit: state.limit + 5}),
+        //     this.onListForCPUS,
+        // )
+        console.log(this.state.cpu);
+        console.log(this.state.processorUID);
+    }
+
+    onDeletePC = uid => {
+        this.props.firebase.processor(uid).delete();
+    };
+
+    storeUID = () => {
+        const {cpu} = this.state;
+
+        cpu.map((item, index) => {
+            this.state.processorsUID.push({uid: item.uid});
+        })
+    }
+
+    render(){
+        const { loading, cpu} = this.state;
+        return(
+            <AuthUserContext.Consumer>
+                {
+                    authUser => (
+                        <div>
+                            {
+                                !loading && cpu && (
+                                    <button type="button" onClick={this.onNextPage}>
+                                        Show More...
+                                    </button>
+                                )
+                            }
+
+                            {loading && <div>loading...</div>}
+
+                            <table border="5">
+                                <tr>
+                                    <td>ITAssigned</td>
+                                    <td>brand</td>
+                                    <td>Date Dispose</td>
+                                    <td>Date Installed</td>
+                                    <td>Date Purchased</td>
+                                    <td>Details</td>
+                                    <td>Fields</td>
+                                    <td>Ip Address</td>
+                                    <td>model</td>
+                                    <td>Property No</td>
+                                    <td>Serial Number</td>
+                                    <td>Status</td>
+                                    <td>Transaction Date</td>
+                                    <td>Type</td>
+                                    <td>User ID</td>
+                                    <td>Actions</td>
+                                </tr>
+                                {
+                                    cpu.map((item, index) => 
+                                        <tr key={index}>
+                                            <td>{item.ITAssigned}</td>
+                                            <td>{item.brand}</td>
+                                            <td>{item.dateDisposed}</td>
+                                            <td>{item.dateInstalled}</td>
+                                            <td>{item.details}</td>
+                                            <td>{item.field}</td>
+                                            <td>{item.ipAddress}</td>
+                                            <td>{item.model}</td>
+                                            <td>{item.propertyNo}</td>
+                                            <td>{item.serialNumber}</td>
+                                            <td>{item.status}</td>
+                                            <td>{item.transactionDate}</td>
+                                            <td>{item.type}</td>
+                                            <td>{item.uid}</td>
+                                            <td>{item.userId}</td>
+                                            <td>
+                                                <button>Edit</button>
+                                                <button>Delete</button>
+                                            </td>
+                                        </tr>
+                                    )
+                                }
+                            </table>
+                        </div>
+                    )
+                }
+            </AuthUserContext.Consumer>
+        );
+    }
+}
+
+export default withFirebase(Lists);
+

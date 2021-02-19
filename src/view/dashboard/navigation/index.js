@@ -17,6 +17,9 @@ const Navigation = ({firebase}) => (
                 <Link to={ROUTES.REGISTER}>Register</Link>
             </li>
             <li>
+                <Link to={ROUTES.PCLIST}>PC Lists</Link>
+            </li>
+            <li>
                 <button type="button" onClick={firebase.SignOut}>
                     Logout
                 </button>

@@ -3,8 +3,6 @@ import 'firebase/auth';
 import 'firebase/database';
 import 'firebase/firestore';
 
-const settings = {timestampsInSnapshots: true};
-
 const config = {
     apiKey: process.env.REACT_APP_API_KEY,
     authDomain: process.env.REACT_APP_AUTH_DOMAIN,
@@ -33,6 +31,8 @@ class Firebase {
     SignOut = () => this.auth.signOut();
     PasswordReset = email => this.auth.sendPasswordResetEmail(email);
     PasswordUpdate = password => this.auth.currentUser.updatePassword(password);
+
+    currUser = () => this.auth.currentUser;
 
     SendEmailVerification = () => this.auth.currentUser.sendEmailVerification({
         url: 'http://localhost:3000',
@@ -70,6 +70,9 @@ class Firebase {
 
     user = uid => this.db.doc(`users/${uid}`);
     users = () => this.db.collection('users');
+
+    processor = uid => this.db.doc(`processors/${uid}`);
+    processors = () => this.db.collection('processors');
 }
 
 export default Firebase;

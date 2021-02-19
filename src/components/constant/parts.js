@@ -1,5 +1,5 @@
 
-export const CPU ={
+export const PROCESSOR ={
     details: '',
     serialNumber: '',
     datePurchase: '',

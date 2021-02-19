@@ -7,7 +7,7 @@ import DashbaordPage from './dashboard';
 import RegisterPage from './Register';
 import AccountablePersonePage from './accountablePerson';
 import HistoryPage from './history';
-import PCPage from './pcList';
+import PCListPage from './pcList';
 import PurchasingPage from './purchasing';
 import ReportsPage from './reports';
 import SeatPlanPage from './seatPlan';
@@ -30,7 +30,7 @@ class App extends Component {
                     <Route path={ROUTES.REGISTER} component={RegisterPage} />
                     <Route path={ROUTES.ACCOUNTABLE_PERSON} component={AccountablePersonePage}/>
                     <Route path={ROUTES.HISTORY} component={HistoryPage} />
-                    <Route path={ROUTES.PCLIST} component={PCPage} />
+                    <Route path={ROUTES.PCLIST} component={PCListPage} />
                     <Route path={ROUTES.PURCHASING} component={PurchasingPage} />
                     <Route path={ROUTES.REPORTS} component={ReportsPage} />
                     <Route path={ROUTES.SEATPLAN} component={SeatPlanPage} />
