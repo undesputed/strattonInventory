@@ -19,7 +19,8 @@ class PCPage extends React.Component {
             currentDate: '',
             cpu: [],
             loading: false,
-            limit: 5,
+            limit:10,
+            addCpu: false,
             ...LISTS.PROCESSOR,
         };
     }
@@ -37,6 +38,7 @@ class PCPage extends React.Component {
 
         this.unsubscribe = this.props.firebase
             .processors()
+            .where('status', '==' ,'Active')
             .orderBy('transactionDate', 'desc')
             .limit(this.state.limit)
             .onSnapshot(snapshot =>{
@@ -45,7 +47,6 @@ class PCPage extends React.Component {
                     snapshot.forEach(doc =>
                         processor.push({ ...doc.data(), uid: doc.id}),
                         );
-                        console.log(processor)
                     this.setState({
                         cpu: processor.reverse(),
                         loading: false,
@@ -134,11 +135,64 @@ class PCPage extends React.Component {
     }
 
     onRemoveContent = uid => {
-        this.props.firebase.processors(uid).delete();
+        this.props.firebase.processor(uid).delete();
     }
 
-    onEditContent = (content, text) => {
+    onEditContent = (content, 
+        details,
+        serialNumber,
+        datePurchase,
+        dateInstalled,
+        dateDispose,
+        brand,
+        model,
+        propertyNo,
+        ITAssigned,
+        UserID,
+        transactionDate,
+        IP,
+        Status,
+        type,
+        field
+        ) => {
         const {uid, ...contentSnapshot} = content;
+
+        var user = this.props.firebase.currUser();
+
+        this.props.firebase.processor(content.uid).set({
+            ...contentSnapshot,
+            details,
+            serialNumber,
+            datePurchase,
+            dateInstalled,
+            dateDispose,
+            brand,
+            model,
+            propertyNo,
+            ITAssigned,
+            UserID: user.uid,
+            transactionDate:  this.state.currentDateTime,
+            IP:'192.168.5.141',
+            Status,
+            type: 'Edited',
+            field:''
+        })
+    }
+
+    onAddCpu = () => {
+        this.setState(
+            state => ({
+                addCpu: !state.addCpu
+            })
+        )
+    }
+
+    onCancelAdd = () => {
+        this.setState(
+            {
+                addCpu: false,
+            }
+        )
     }
 
     render(){
@@ -156,7 +210,8 @@ class PCPage extends React.Component {
             transactionDate,
             IP,
             Status,
-            cpu
+            cpu,
+            addCpu,
         } = this.state;
 
         const isInvalid = serialNumber === '' || brand === '' || model === '' || propertyNo === '';
@@ -165,62 +220,72 @@ class PCPage extends React.Component {
             <AuthUserContext.Consumer>
                 {authUser => (
                     <div>
-                        <form onSubmit={this.onSubmit}>
-                            <div className="form-group">
-                                <label>Details:</label>
-                                <input type="text" className="form-control" name="details" value={details} onChange={this.onChange} placeholder="Details" />
-                            </div>
-                            <div className="form-group">
-                                <label>Serial Number:</label>
-                                <input type="text" className="form-control" name="serialNumber" value={serialNumber} onChange={this.onChange} placeholder="Serial Number" />
-                            </div>
-                            <div className="form-group">
-                                <label>Date Purchased:</label>
-                                <input type="date" className="form-control" name="datePurchase" value={datePurchase} onChange={this.onChange} placeholder="Date Purchsed" />
-                            </div>
-                            <div className="form-group">
-                                <label>Date Installed:</label>
-                                <input type="date" className="form-control" name="dateInstalled" value={dateInstalled} onChange={this.onChange} placeholder="Date Installed" />
-                            </div>
-                            <div className="form-group">
-                                <label>Date Dispose:</label>
-                                <input type="date" className="form-control" name="dateDispose" value={dateDispose} onChange={this.onChange} placeholder="Date Disposed" />
-                            </div>
-                            <div className="form-group">
-                                <label>Brand Name:</label>
-                                <input type="text" className="form-control" name="brand" value={brand} onChange={this.onChange} placeholder="brand" />
-                            </div>
-                            <div className="form-group">
-                                <label>Model:</label>
-                                <input type="text" className="form-control" name="model" value={model} onChange={this.onChange} placeholder="model" />
-                            </div>
-                            <div className="form-group">
-                                <label>Property Number:</label>
-                                <input type="text" className="form-control" name="propertyNo" value={propertyNo} onChange={this.onChange} placeholder="Property Number" />
-                            </div>
-                            <div className="form-group">
-                                <label>IT Assigned:</label>
-                                {/* <input type="text" className="form-control" name="ITAssigned" value={ITAssigned} onChange={this.onChange} placeholder="IT Assigned" /> */}
-                                <select name="ITAssigned" value={ITAssigned} onChange={this.onChange}>
-                                    <option value="0">Please Select an IT</option>
-                                    <option value="1">Dhanny Lou Sumilang (Manager)</option>
-                                    <option value="2">Murielle Beronga (Senior Developer)</option>
-                                    <option value="3">Maria Christina Mingueto (Software Developer)</option>
-                                    <option value="4">Jessa Jane Canillo (Tehcnical Support)</option>
-                                    <option value="5">Carrie A. Yu (IT Staff)</option>
-                                </select>
-                            </div>
-                            <div className="form-group">
-                                <label>Transaction Date:</label>
-                                <input disabled type="text" className="form-control" name="transactionDate" value={this.state.currentDate} onChange={this.onChange} placeholder="Transaction Date" />
-                            </div>
-                            <div className="form-group">
-                                <label>Status:</label>
-                                <input type="text" className="form-control" name="Status" value={Status} onChange={this.onChange} placeholder="Status" />
-                            </div>
-                            <button type="submit" className="btn btn-success">Submit</button>
-                            <Link to="/lists">Lists</Link>
-                        </form>
+                        {
+                            addCpu ? (
+                                <div>
+                                    <form onSubmit={this.onSubmit}>
+                                        <div className="form-group">
+                                            <label>Details:</label>
+                                            <input type="text" className="form-control" name="details" value={details} onChange={this.onChange} placeholder="Details" />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Serial Number:</label>
+                                            <input type="text" className="form-control" name="serialNumber" value={serialNumber} onChange={this.onChange} placeholder="Serial Number" />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Date Purchased:</label>
+                                            <input type="date" className="form-control" name="datePurchase" value={datePurchase} onChange={this.onChange} placeholder="Date Purchsed" />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Date Installed:</label>
+                                            <input type="date" className="form-control" name="dateInstalled" value={dateInstalled} onChange={this.onChange} placeholder="Date Installed" />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Date Dispose:</label>
+                                            <input type="date" className="form-control" name="dateDispose" value={dateDispose} onChange={this.onChange} placeholder="Date Disposed" />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Brand Name:</label>
+                                            <input type="text" className="form-control" name="brand" value={brand} onChange={this.onChange} placeholder="brand" />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Model:</label>
+                                            <input type="text" className="form-control" name="model" value={model} onChange={this.onChange} placeholder="model" />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Property Number:</label>
+                                            <input type="text" className="form-control" name="propertyNo" value={propertyNo} onChange={this.onChange} placeholder="Property Number" />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>IT Assigned:</label>
+                                            {/* <input type="text" className="form-control" name="ITAssigned" value={ITAssigned} onChange={this.onChange} placeholder="IT Assigned" /> */}
+                                            <select name="ITAssigned" value={ITAssigned} onChange={this.onChange}>
+                                                <option value="0">Please Select an IT</option>
+                                                <option value="1">Dhanny Lou Sumilang (Manager)</option>
+                                                <option value="2">Murielle Beronga (Senior Developer)</option>
+                                                <option value="3">Maria Christina Mingueto (Software Developer)</option>
+                                                <option value="4">Jessa Jane Canillo (Tehcnical Support)</option>
+                                                <option value="5">Carrie A. Yu (IT Staff)</option>
+                                            </select>
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Transaction Date:</label>
+                                            <input disabled type="text" className="form-control" name="transactionDate" value={this.state.currentDate} onChange={this.onChange} placeholder="Transaction Date" />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Status:</label>
+                                            <input type="text" className="form-control" name="Status" value={Status} onChange={this.onChange} placeholder="Status" />
+                                        </div>
+                                        <button type="submit" className="btn btn-success">Submit</button>
+                                        <button onClick={this.onCancelAdd}>Cancel</button>
+                                    </form>
+                                </div>
+                            ) : (
+                                <div>
+                                    <button onClick={this.onAddCpu}>Add CPU</button>
+                                </div>
+                            )
+                        }
 
                         {
                             cpu && (

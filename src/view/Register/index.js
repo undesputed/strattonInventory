@@ -14,7 +14,14 @@ const RegisterPage = () => (
 )
 
 const INITIAL_STATE = {
-    username: '',
+    firstname: '',
+    lastname: '',
+    position: '',
+    transactionDate: '',
+    editedDate: '',
+    fieldEdited: '',
+    type: '',
+    IP: '',
     email: '',
     passwordOne: '',
     passwordTwo: '',
@@ -38,13 +45,37 @@ class RegisterFormBase extends Component{
         this.state = {...INITIAL_STATE};
     }
 
+    componentDidMount(){
+        var date = new Date();
+        var today = (date.getMonth() + 1)+'/'+date.getDate()+'/'+date.getFullYear();
+        var time = date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
+        this.setState({transactionDate: today + ' ' + time});
+    }
+
     onSubmit = event => {
-        const {username, email, passwordOne} = this.state;
+        const {
+            firstname,
+            lastname,
+            position,
+            transactionDate,
+            editedDate,
+            fieldEdited,
+            type,
+            IP,
+            email, 
+            passwordOne} = this.state;
 
         this.props.firebase.CreateUserWithEmailAndPassword(email, passwordOne)
         .then(authUser => {
             return this.props.firebase.user(authUser.user.uid).set({
-                username,
+                firstname,
+                lastname,
+                position,
+                transactionDate,
+                editedDate,
+                fieldEdited,
+                type,
+                IP,
                 email,
             },{merge: true},
             );
@@ -53,6 +84,7 @@ class RegisterFormBase extends Component{
             return this.props.firebase.SendEmailVerification();
         })
         .then(() => {
+            console.log("Registration Success")
             this.setState({ ...INITIAL_STATE });
             this.props.history.push(ROUTES.DASHBOARD);
         })
@@ -75,25 +107,47 @@ class RegisterFormBase extends Component{
 
     render(){
         const {
-            username,
+            firstname,
+            lastname,
+            position,
+            transactionDate,
+            editedDate,
+            fieldEdited,
+            type,
+            IP,
             email,
             passwordOne,
             passwordTwo,
             error,
         } = this.state;
 
-        const isInvalid = passwordOne !== passwordTwo || passwordOne === '' || email === '' || username === '';
+        const isInvalid = passwordOne !== passwordTwo || passwordOne === '' || email === '';
 
         return(
             <div>
             <form onSubmit={this.onSubmit}>
                 <input
-                    name="username"
-                    value={username}
+                    name="firstname"
+                    value={firstname}
                     onChange={this.onChange}
                     type="text"
-                    placeholder="Full Name"
+                    placeholder="First Name"
                 />
+                <input
+                    name="lastname"
+                    value={lastname}
+                    onChange={this.onChange}
+                    type="text"
+                    placeholder="Last Name"
+                />
+                <input
+                    name="position"
+                    value={position}
+                    onChange={this.onChange}
+                    type="text"
+                    placeholder="Position"
+                />
+                
                 <input
                     name="email"
                     value={email}

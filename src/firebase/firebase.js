@@ -73,6 +73,21 @@ class Firebase {
 
     processor = uid => this.db.doc(`processors/${uid}`);
     processors = () => this.db.collection('processors');
+
+    itstaff = uid => this.db.doc(`itstaffs/${uid}`);
+    itstaffs = () => this.db.collection('itstaffs');
+
+    accountablePerson = uid => this.db.doc(`accountablePersons/${uid}`);
+    accountablePersons = () => this.db.collection('accountablePersons');
+
+    report = uid => this.db.doc(`reports/${uid}`);
+    reports = () => this.db.collection('reports');
+
+    seatplan = uid => this.db.doc(`seatplans/${uid}`);
+    seatplans = () => this.db.collection('setplans');
+
+    tracker = uid => this.db.doc(`trackers/${uid}`);
+    trackers = () => this.db.collection('trackers');
 }
 
 export default Firebase;
