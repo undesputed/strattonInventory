@@ -1,6 +1,6 @@
 import React, {Component} from  'react';
 
-import * as LISTS from '../../components/constant/parts';
+import * as LISTS from '../../../components/constant/parts';
 
 class PCItem extends Component{
     constructor(props) {
@@ -83,7 +83,7 @@ class PCItem extends Component{
             Status,
         } = this.state;
         return(
-            <div>
+            <li>
                 {editMode ? (
                     <div>
                         <input type="text" className="form-control" name="details" value={details} onChange={this.onChange} placeholder={content.details} />
@@ -109,9 +109,8 @@ class PCItem extends Component{
                         <input disabled type="text" className="form-control" name="transactionDate" value={this.state.currentDate} onChange={this.onChange} placeholder={content.transactionDate}/>
                         <input type="text" className="form-control" name="Status" value={Status} onChange={this.onChange} placeholder={content.status}/>
                     </div>
-                ) : (
+                ) : (   
                     <div>
-                    <table border="1">
                         <tr>
                             <td>ITAssigned</td>
                             <td>brand</td>
@@ -146,7 +145,6 @@ class PCItem extends Component{
                             <td>{content.type}</td>
                             <td>{content.uid}</td>
                         </tr>
-                    </table>
                     </div>
                 )}
 
@@ -171,7 +169,7 @@ class PCItem extends Component{
                         )}
                     </span>
                 )}
-            </div>
+            </li>
         )
     }
 

@@ -9,7 +9,7 @@ const PCLists = ({
     onRemoveContent,
 }) => (
     // <table border="5">
-    <div>
+    <ul>
     {
         content.map(content => (
             <PCItem
@@ -21,7 +21,7 @@ const PCLists = ({
             />
         ))
     }
-    </div>
+    </ul>
     // </table>
 );
 
